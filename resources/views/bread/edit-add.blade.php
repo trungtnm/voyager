@@ -45,11 +45,6 @@
                                 </div>
                             @endif
 
-                            <!-- Adding / Editing -->
-                            @php
-                                $dataTypeRows = $dataType->{(!is_null($dataTypeContent->getKey()) ? 'editRows' : 'addRows' )};
-                            @endphp
-
                             @foreach($dataTypeRows as $row)
                                 <!-- GET THE DISPLAY OPTIONS -->
                                 @php

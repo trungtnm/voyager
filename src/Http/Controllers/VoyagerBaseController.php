@@ -199,8 +199,9 @@ class VoyagerBaseController extends Controller
         if (view()->exists("voyager::$slug.edit-add")) {
             $view = "voyager::$slug.edit-add";
         }
+        $dataTypeRows = $dataType->editRows;
 
-        return Voyager::view($view, compact('dataType', 'dataTypeContent', 'isModelTranslatable'));
+        return Voyager::view($view, compact('dataType', 'dataTypeContent', 'isModelTranslatable', 'dataTypeRows'));
     }
 
     // POST BR(E)AD
@@ -281,8 +282,9 @@ class VoyagerBaseController extends Controller
         if (view()->exists("voyager::$slug.edit-add")) {
             $view = "voyager::$slug.edit-add";
         }
+        $dataTypeRows = $dataType->addRows;
 
-        return Voyager::view($view, compact('dataType', 'dataTypeContent', 'isModelTranslatable'));
+        return Voyager::view($view, compact('dataType', 'dataTypeContent', 'isModelTranslatable', 'dataTypeRows'));
     }
 
     /**

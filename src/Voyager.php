@@ -6,7 +6,6 @@ use Arrilot\Widgets\Facade as Widget;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use TCG\Voyager\Actions\DeleteAction;
@@ -120,6 +119,46 @@ class Voyager
         }
 
         $this->viewLoadingEvents[$name][] = $closure;
+    }
+
+    /**
+     * @param \Illuminate\Database\Eloquent\Collection $dataTypeRows
+     * @param                                          $fieldName
+     *
+     * @return DataRow
+     * @throws \Exception
+     */
+    public function getField(Collection $dataTypeRows, $fieldName)
+    {
+        $dataRow = $dataTypeRows->where('field', $fieldName)->first();
+        if (!$dataRow || !$dataRow instanceof DataRow) {
+            throw new \Exception("Field `{$fieldName}` not found");
+        }
+
+        return $dataRow;
+    }
+
+    /**
+     * @param \TCG\Voyager\Models\DataRow $row
+     * @param                             $dataType
+     * @param                             $dataTypeContent
+     * @param bool                        $withLabel
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed|string
+     */
+    public function formWidget(DataRow $row, $dataType, $dataTypeContent, $withLabel = true)
+    {
+        return $this->view('voyager::bread.partials.formWidget', compact('row', 'dataType', 'dataTypeContent', 'withLabel'));
+    }
+
+    /**
+     * @param \TCG\Voyager\Models\DataRow $dataRow
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function formLabel(DataRow $dataRow)
+    {
+        return $this->view('voyager::bread.partials.formLabel', ['row' => $dataRow]);
     }
 
     public function formField($row, $dataType, $dataTypeContent)
