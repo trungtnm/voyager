@@ -11,10 +11,13 @@ use TCG\Voyager\Events\BreadDataUpdated;
 use TCG\Voyager\Events\BreadImagesDeleted;
 use TCG\Voyager\Facades\Voyager;
 use TCG\Voyager\Http\Controllers\Traits\BreadRelationshipParser;
+use TCG\Voyager\Models\DataType;
 
 class VoyagerBaseController extends Controller
 {
     use BreadRelationshipParser;
+
+    protected $searchable = [];
 
     //***************************************
     //               ____
@@ -42,7 +45,7 @@ class VoyagerBaseController extends Controller
         $getter = $dataType->server_side ? 'paginate' : 'get';
 
         $search = (object) ['value' => $request->get('s'), 'key' => $request->get('key'), 'filter' => $request->get('filter')];
-        $searchable = $dataType->server_side ? array_keys(SchemaManager::describeTable(app($dataType->model_name)->getTable())->toArray()) : '';
+        $searchable = $this->getSearchableFields($dataType);
         $orderBy = $request->get('order_by');
         $sortOrder = $request->get('sort_order', null);
 
@@ -263,8 +266,8 @@ class VoyagerBaseController extends Controller
         $this->authorize('add', app($dataType->model_name));
 
         $dataTypeContent = (strlen($dataType->model_name) != 0)
-                            ? new $dataType->model_name()
-                            : false;
+            ? new $dataType->model_name()
+            : false;
 
         foreach ($dataType->addRows as $key => $row) {
             $details = json_decode($row->details);
@@ -322,9 +325,9 @@ class VoyagerBaseController extends Controller
             return redirect()
                 ->route("voyager.{$dataType->slug}.index")
                 ->with([
-                        'message'    => __('voyager::generic.successfully_added_new')." {$dataType->display_name_singular}",
-                        'alert-type' => 'success',
-                    ]);
+                    'message'    => __('voyager::generic.successfully_added_new')." {$dataType->display_name_singular}",
+                    'alert-type' => 'success',
+                ]);
         }
     }
 
@@ -463,11 +466,11 @@ class VoyagerBaseController extends Controller
 
         if (!isset($dataType->order_column) || !isset($dataType->order_display_column)) {
             return redirect()
-            ->route("voyager.{$dataType->slug}.index")
-            ->with([
-                'message'    => __('voyager::bread.ordering_not_set'),
-                'alert-type' => 'error',
-            ]);
+                ->route("voyager.{$dataType->slug}.index")
+                ->with([
+                    'message'    => __('voyager::bread.ordering_not_set'),
+                    'alert-type' => 'error',
+                ]);
         }
 
         $model = app($dataType->model_name);
@@ -506,5 +509,20 @@ class VoyagerBaseController extends Controller
             $i->$column = ($key + 1);
             $i->save();
         }
+    }
+
+    /**
+     * @param \TCG\Voyager\Models\DataType $dataType
+     *
+     * @return array|string
+     */
+    protected function getSearchableFields(DataType $dataType)
+    {
+        if (!$dataType->server_side) {
+            return '';
+        }
+        $model = app($dataType->model_name);
+
+        return !empty($this->searchable) ? $this->searchable : array_keys(SchemaManager::describeTable($model->getTable())->toArray());
     }
 }
