@@ -525,4 +525,24 @@ class VoyagerBaseController extends Controller
 
         return !empty($this->searchable) ? $this->searchable : array_keys(SchemaManager::describeTable($model->getTable())->toArray());
     }
+
+    public function toggleBoolean(Request $request)
+    {
+        $slug = $this->getSlug($request);
+        $field = $request->input('field');
+        $id = $request->input('id');
+        $dataType = Voyager::model('DataType')->where('slug', '=', $slug)->firstOrFail();
+        $dataRow = $dataType->rows()->where('field', $field)->firstOrFail();
+        if (!in_array($dataRow->type, ['checkbox', 'radio_btn'])) {
+            return response()->json(['errors' => ["You are not allowed to perform this action on field `{$field}``"]]);
+        }
+        // Check permission
+        $this->authorize('edit', app($dataType->model_name));
+        $model = app($dataType->model_name);
+        $item = $model->findOrFail($id);
+        $item->{$field} = !boolval($item->{$field});
+        $item->save();
+
+        return response()->json(['success' => true, 'value' => $item->{$field}]);
+    }
 }

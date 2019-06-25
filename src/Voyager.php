@@ -421,4 +421,14 @@ class Voyager
     {
         return array_diff(scandir(realpath(__DIR__.'/../publishable/lang')), ['..', '.']);
     }
+
+    public function displayField(DataType $dataType, DataRow $row, $data)
+    {
+        $userDefinedView = "voyager::{$dataType->slug}.{$row->field}";
+        if (\View::exists($userDefinedView)) {
+             return view($userDefinedView, compact('dataType', 'row', 'data'));
+        }
+
+        return view('voyager::bread.partials.fieldDisplay', compact('dataType', 'row', 'data'));
+    }
 }
