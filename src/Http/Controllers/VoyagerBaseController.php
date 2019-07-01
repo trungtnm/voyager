@@ -54,35 +54,19 @@ class VoyagerBaseController extends Controller
             $relationships = $this->getRelationships($dataType);
 
             $model = app($dataType->model_name);
-            $query = $model::select('*')->with($relationships);
-
-            // If a column has a relationship associated with it, we do not want to show that field
-            $this->removeRelationshipField($dataType, 'browse');
-
-            if ($search->value && $search->key && $search->filter) {
-                $search_filter = ($search->filter == 'equals') ? '=' : 'LIKE';
-                $search_value = ($search->filter == 'equals') ? $search->value : '%'.$search->value.'%';
-                $query->where($search->key, $search_filter, $search_value);
-            }
-
-            if ($orderBy && in_array($orderBy, $dataType->fields())) {
-                $querySortOrder = (!empty($sortOrder)) ? $sortOrder : 'DESC';
-                $dataTypeContent = call_user_func([
-                    $query->orderBy($orderBy, $querySortOrder),
-                    $getter,
-                ]);
-            } elseif ($model->timestamps) {
-                $dataTypeContent = call_user_func([$query->latest($model::CREATED_AT), $getter]);
-            } else {
-                $dataTypeContent = call_user_func([$query->orderBy($model->getKeyName(), 'DESC'), $getter]);
-            }
-
-            // Replace relationships' keys for labels and create READ links if a slug is provided.
-            $dataTypeContent = $this->resolveRelations($dataTypeContent, $dataType);
+            $query = $this->getBreadBrowseEloquentQuery($dataType, $model, $search, $getter, $orderBy, $sortOrder);
+            $this->alterBreadBrowseEloquentQuery($query, $request);
         } else {
             // If Model doesn't exist, get data from table name
-            $dataTypeContent = call_user_func([DB::table($dataType->name), $getter]);
             $model = false;
+            $query = $this->getBreadBrowseDbQuery($dataType, $getter);
+            $this->alterBreadBrowseDbQuery($query, $request);
+        }
+
+        $dataTypeContent = call_user_func([$query, $getter]);
+        if (strlen($dataType->model_name) != 0) {
+            // Replace relationships' keys for labels and create READ links if a slug is provided.
+            $dataTypeContent = $this->resolveRelations($dataTypeContent, $dataType);
         }
 
         // Check if BREAD is Translatable
@@ -544,5 +528,69 @@ class VoyagerBaseController extends Controller
         $item->save();
 
         return response()->json(['success' => true, 'value' => $item->{$field}]);
+    }
+
+    /**
+     * @param \TCG\Voyager\Models\DataType $dataType
+     * @param                              $model
+     * @param                              $search
+     * @param null                         $orderBy
+     * @param null                         $sortOrder
+     *
+     * @return \Illuminate\Database\Query\Builder
+     */
+    protected function getBreadBrowseEloquentQuery(DataType $dataType, $model, $search, $orderBy = null, $sortOrder = null)
+    {
+        $relationships = $this->getRelationships($dataType);
+        /** @var \Illuminate\Database\Eloquent\Builder $query */
+        $query = $model::select('*');
+        $query->with($relationships);
+
+        // If a column has a relationship associated with it, we do not want to show that field
+        $this->removeRelationshipField($dataType, 'browse');
+
+        if ($search->value && $search->key && $search->filter) {
+            $search_filter = ($search->filter == 'equals') ? '=' : 'LIKE';
+            $search_value = ($search->filter == 'equals') ? $search->value : '%'.$search->value.'%';
+            $query->where($search->key, $search_filter, $search_value);
+        }
+
+        if ($orderBy && in_array($orderBy, $dataType->fields())) {
+            $querySortOrder = (!empty($sortOrder)) ? $sortOrder : 'DESC';
+            $query->orderBy($orderBy, $querySortOrder);
+        } elseif ($model->timestamps) {
+            $query->latest($model::CREATED_AT);
+        } else {
+            $query->orderBy($model->getKeyName(), 'DESC');
+        }
+
+        return $query;
+    }
+
+    /**
+     * @param \TCG\Voyager\Models\DataType $dataType
+     * @return \Illuminate\Database\Query\Builder
+     */
+    protected function getBreadBrowseDbQuery(DataType $dataType)
+    {
+        return DB::table($dataType->name);
+    }
+
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Http\Request              $request
+     */
+    protected function alterBreadBrowseEloquentQuery(\Illuminate\Database\Eloquent\Builder $query, Request $request)
+    {
+        /** PLACEHOLDER FOR ALTERING BREAD BROWSE QUERY, SUB-CLASSES CAN OVERRIDE THIS FUNCTION TO ALTER QUERY */
+    }
+
+    /**
+     * @param \Illuminate\Database\Query\Builder $query
+     * @param \Illuminate\Http\Request           $request
+     */
+    protected function alterBreadBrowseDbQuery(\Illuminate\Database\Query\Builder $query, Request $request)
+    {
+        /** PLACEHOLDER FOR ALTERING BREAD BROWSE QUERY, SUB-CLASSES CAN OVERRIDE THIS FUNCTION TO ALTER QUERY */
     }
 }

@@ -106,7 +106,6 @@ trait BreadRelationshipParser
     protected function relationToLink(Model $item, DataType $dataType)
     {
         $relations = $item->getRelations();
-
         if (!empty($relations) && array_filter($relations)) {
             foreach ($relations as $field => $relation) {
                 if (isset($this->relation_field[$field])) {
@@ -116,6 +115,9 @@ trait BreadRelationshipParser
                 }
 
                 $bread_data = $dataType->browseRows->where('field', $field)->first();
+                if (!$bread_data) {
+                    continue;
+                }
                 $relationData = json_decode($bread_data->details)->relationship;
 
                 if ($bread_data->type == 'select_multiple') {
