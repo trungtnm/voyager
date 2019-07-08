@@ -30,7 +30,6 @@ class VoyagerController extends Controller
         $resizeHeight = null;
         $slug = $request->input('type_slug');
         $file = $request->file('image');
-
         $path = $slug.'/'.date('F').date('Y').'/';
 
         $filename = basename($file->getClientOriginalName(), '.'.$file->getClientOriginalExtension());
@@ -44,14 +43,17 @@ class VoyagerController extends Controller
         $fullPath = $path.$filename.'.'.$file->getClientOriginalExtension();
 
         $ext = $file->guessClientExtension();
-
         if (in_array($ext, ['jpeg', 'jpg', 'png', 'gif'])) {
-            $image = Image::make($file)
-                ->resize($resizeWidth, $resizeHeight, function (Constraint $constraint) {
-                    $constraint->aspectRatio();
-                    $constraint->upsize();
-                })
-                ->encode($file->getClientOriginalExtension(), 75);
+            if ($ext == 'gif') {
+                $image = $file->get();
+            } else {
+                $image = Image::make($file)
+                    ->resize($resizeWidth, $resizeHeight, function (Constraint $constraint) {
+                        $constraint->aspectRatio();
+                        $constraint->upsize();
+                    })
+                    ->encode($file->getClientOriginalExtension(), 75);
+            }
 
             // move uploaded file from temp to uploads directory
             if (Storage::disk(config('voyager.storage.disk'))->put($fullPath, (string) $image, 'public')) {
