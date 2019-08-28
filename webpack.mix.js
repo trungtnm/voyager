@@ -13,5 +13,9 @@ const { mix } = require('laravel-mix');
 
 mix.options({
     	processCssUrls: false
-	}).sass('resources/assets/sass/app.scss', 'publishable/assets/css')
-	  .js('resources/assets/js/app.js', 'publishable/assets/js');
+	})
+	.copyDirectory('resources/assets/img', 'publishable/assets/img')
+	.sass('resources/assets/sass/app.scss', 'publishable/assets/css')
+	.js('resources/assets/js/app.js', 'publishable/assets/js');
+
+

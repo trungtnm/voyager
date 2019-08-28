@@ -431,4 +431,13 @@ class Voyager
 
         return view('voyager::bread.partials.fieldDisplay', compact('dataType', 'row', 'data'));
     }
+
+    public function getBreadView($view, $slug)
+    {
+        if (view()->exists("voyager::$slug." . $view)) {
+            return "voyager::$slug." . $view;
+        } else {
+            return "voyager::bread." . $view;
+        }
+    }
 }

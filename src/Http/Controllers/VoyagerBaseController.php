@@ -77,11 +77,7 @@ class VoyagerBaseController extends Controller
         // Check if server side pagination is enabled
         $isServerSide = isset($dataType->server_side) && $dataType->server_side;
 
-        $view = 'voyager::bread.browse';
-
-        if (view()->exists("voyager::$slug.browse")) {
-            $view = "voyager::$slug.browse";
-        }
+        $view = Voyager::getBreadView('browse', $slug);
 
         return Voyager::view($view, compact(
             'dataType',
@@ -134,11 +130,7 @@ class VoyagerBaseController extends Controller
         // Check if BREAD is Translatable
         $isModelTranslatable = is_bread_translatable($dataTypeContent);
 
-        $view = 'voyager::bread.read';
-
-        if (view()->exists("voyager::$slug.read")) {
-            $view = "voyager::$slug.read";
-        }
+        $view = Voyager::getBreadView('read', $slug);
 
         return Voyager::view($view, compact('dataType', 'dataTypeContent', 'isModelTranslatable'));
     }
@@ -181,11 +173,7 @@ class VoyagerBaseController extends Controller
         // Check if BREAD is Translatable
         $isModelTranslatable = is_bread_translatable($dataTypeContent);
 
-        $view = 'voyager::bread.edit-add';
-
-        if (view()->exists("voyager::$slug.edit-add")) {
-            $view = "voyager::$slug.edit-add";
-        }
+        $view = Voyager::getBreadView('edit-add', $slug);
         $dataTypeRows = $dataType->editRows;
 
         return Voyager::view($view, compact('dataType', 'dataTypeContent', 'isModelTranslatable', 'dataTypeRows'));
@@ -264,11 +252,7 @@ class VoyagerBaseController extends Controller
         // Check if BREAD is Translatable
         $isModelTranslatable = is_bread_translatable($dataTypeContent);
 
-        $view = 'voyager::bread.edit-add';
-
-        if (view()->exists("voyager::$slug.edit-add")) {
-            $view = "voyager::$slug.edit-add";
-        }
+        $view = Voyager::getBreadView('edit-add', $slug);
         $dataTypeRows = $dataType->addRows;
 
         return Voyager::view($view, compact('dataType', 'dataTypeContent', 'isModelTranslatable', 'dataTypeRows'));
@@ -462,11 +446,7 @@ class VoyagerBaseController extends Controller
 
         $display_column = $dataType->order_display_column;
 
-        $view = 'voyager::bread.order';
-
-        if (view()->exists("voyager::$slug.order")) {
-            $view = "voyager::$slug.order";
-        }
+        $view = Voyager::getBreadView('order', $slug);
 
         return Voyager::view($view, compact(
             'dataType',
@@ -592,5 +572,33 @@ class VoyagerBaseController extends Controller
     protected function alterBreadBrowseDbQuery(\Illuminate\Database\Query\Builder $query, Request $request)
     {
         /** PLACEHOLDER FOR ALTERING BREAD BROWSE QUERY, SUB-CLASSES CAN OVERRIDE THIS FUNCTION TO ALTER QUERY */
+    }
+
+    protected function quickEdit(Request $request)
+    {
+        $slug = $this->getSlug($request);
+        $field = $request->input('name');
+        $id = $request->input('pk');
+        $dataType = Voyager::model('DataType')->where('slug', '=', $slug)->firstOrFail();
+        if (!in_array($field, $this->getEditableFields())) {
+            return response()->json(['errors' => ["You are not allowed to perform this action on field `{$field}``"]]);
+        }
+        // Check permission
+        $this->authorize('edit', app($dataType->model_name));
+        $model = app($dataType->model_name);
+        $item = $model->findOrFail($id);
+        $item->{$field} = $request->input('value');
+        $item->save();
+
+        return response()->json(['success' => true, 'value' => $item->{$field}]);
+    }
+
+    /**
+     * @return array
+     */
+    protected function getEditableFields()
+    {
+        // Subclass should return list editable fields to perform quick edit action
+        return [];
     }
 }

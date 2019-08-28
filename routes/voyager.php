@@ -43,6 +43,7 @@ Route::group(['as' => 'voyager.'], function () {
                 Route::get($dataType->slug.'/order', $breadController.'@order')->name($dataType->slug.'.order');
                 Route::post($dataType->slug.'/order', $breadController.'@update_order')->name($dataType->slug.'.order');
                 Route::post($dataType->slug.'/toggleBoolean', $breadController.'@toggleBoolean')->name($dataType->slug.'.toggle_boolean');
+                Route::post($dataType->slug.'/quickEdit', $breadController.'@quickEdit')->name($dataType->slug.'.quickEdit');
                 Route::resource($dataType->slug, $breadController);
             }
         } catch (\InvalidArgumentException $e) {

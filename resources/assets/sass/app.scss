@@ -14,6 +14,7 @@
 @import "node_modules/dropzone/dist/dropzone";
 @import "node_modules/cropperjs/dist/cropper";
 @import "fonts";
+@import "bootstrap-editable";
 
 /********** LOGIN STYLES ***********/
 
@@ -9056,3 +9057,21 @@ div.cropper-container img {
 }
 
 /********** END SimpleMDE Style **********/
+
+
+/********** X-Editable Styles **********/
+.editable-popup {
+  .editable-input {
+    input {
+      height: 35px;
+    }
+  }
+  .editable-buttons {
+    button {
+      margin-top: 0;
+    }
+  }
+}
+
+/********** End X-Editable Styles **********/
+

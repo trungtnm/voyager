@@ -25,6 +25,7 @@ window.TinyMCE = window.tinymce = require('./tinymce');
 require('./multilingual');
 require('./voyager_tinymce');
 require('./voyager_ace_editor');
+require('./bootstrap-editable.min');
 window.helpers = require('./helpers.js');
 
 $(document).ready(function () {
@@ -254,4 +255,6 @@ $(document).ready(function () {
         $($(this).parent().html()).appendTo('#thumbnailModal .modal-body');
         $('#thumbnailModal').modal({show:true});
     });
+
+    $('.editable').editable();
 });

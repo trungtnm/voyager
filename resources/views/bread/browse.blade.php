@@ -33,8 +33,8 @@
             <div class="col-md-12">
                 <div class="panel panel-bordered">
                     <div class="panel-body">
-                        @include('voyager::partials.filters')
-                        @include('voyager::partials.data')
+                        @include(\Voyager::getBreadView('partials.filters', $dataType->slug))
+                        @include(\Voyager::getBreadView('partials.data', $dataType->slug))
                     </div>
                 </div>
             </div>
