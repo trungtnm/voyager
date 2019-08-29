@@ -256,5 +256,9 @@ $(document).ready(function () {
         $('#thumbnailModal').modal({show:true});
     });
 
-    $('.editable').editable();
+    $('.editable').editable({
+        success: function(response, newValue) {
+            if(response.success) return {newValue: response.newValue};
+        }
+    });
 });
