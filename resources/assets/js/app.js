@@ -106,17 +106,30 @@ $(document).ready(function () {
 
     $(document).on('click', '.panel-heading a.panel-action[data-toggle="panel-collapse"]', function (e) {
         e.preventDefault();
-        var $this = $(this);
-
+        let $this = $(this);
+        let upClass = $this.data('up') || 'voyager-angle-up';
+        let downClass = $this.data('down') || 'voyager-angle-down';
         // Toggle Collapse
         if (!$this.hasClass('panel-collapsed')) {
             $this.parents('.panel').find('.panel-body').slideUp();
             $this.addClass('panel-collapsed');
-            $this.removeClass('voyager-angle-up').addClass('voyager-angle-down');
+            $this.removeClass(upClass).addClass(downClass);
         } else {
             $this.parents('.panel').find('.panel-body').slideDown();
             $this.removeClass('panel-collapsed');
-            $this.removeClass('voyager-angle-down').addClass('voyager-angle-up');
+            $this.removeClass(downClass).addClass(upClass);
+        }
+    });
+    $(document).on('click', '.collapsible [data-toggle="collapse"]', function (e) {
+        e.preventDefault();
+        let $this = $(this);
+        let upClass = $this.data('up') || 'voyager-angle-up';
+        let downClass = $this.data('down') || 'voyager-angle-down';
+        // Toggle Collapse
+        if (!$this.hasClass('collapsed')) {
+            $this.removeClass(downClass).addClass(upClass);
+        } else {
+            $this.removeClass(upClass).addClass(downClass);
         }
     });
 

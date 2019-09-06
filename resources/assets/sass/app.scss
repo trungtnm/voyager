@@ -9075,3 +9075,15 @@ div.cropper-container img {
 
 /********** End X-Editable Styles **********/
 
+@media (max-width: 520px) {
+  .container-fluid {
+    padding: 0 !important;
+  }
+  .tab-content>div {
+    padding: 20px 5px;
+  }
+  .panel.widget {
+    padding: 20px 10px;
+    margin: 10px;
+  }
+}
