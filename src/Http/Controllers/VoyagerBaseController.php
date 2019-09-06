@@ -54,12 +54,12 @@ class VoyagerBaseController extends Controller
             $relationships = $this->getRelationships($dataType);
 
             $model = app($dataType->model_name);
-            $query = $this->getBreadBrowseEloquentQuery($dataType, $model, $search, $getter, $orderBy, $sortOrder);
+            $query = $this->getBreadBrowseEloquentQuery($dataType, $model, $search, $orderBy, $sortOrder);
             $this->alterBreadBrowseEloquentQuery($query, $request);
         } else {
             // If Model doesn't exist, get data from table name
             $model = false;
-            $query = $this->getBreadBrowseDbQuery($dataType, $getter);
+            $query = $this->getBreadBrowseDbQuery($dataType);
             $this->alterBreadBrowseDbQuery($query, $request);
         }
 
