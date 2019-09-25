@@ -44,6 +44,9 @@ $(document).ready(function () {
         moreLink: '<a href="#" class="readm-link">Read More</a>',
     });
 
+    // bootstrap tooltip
+    $('[data-toggle="tooltip"]').tooltip();
+
     $(".hamburger, .navbar-expand-toggle").on('click', function () {
         appContainer.toggleClass("expanded");
         $(this).toggleClass('is-active');
