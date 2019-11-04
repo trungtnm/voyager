@@ -278,4 +278,8 @@ $(document).ready(function () {
             if(response.success) return {newValue: response.newValue};
         }
     });
+
+    if ($('#slug').length && $('#title').length) {
+        $('#slug').slugify('#title');
+    }
 });

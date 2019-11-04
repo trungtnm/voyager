@@ -296,8 +296,6 @@
 @section('javascript')
     <script>
         $('document').ready(function () {
-            $('#slug').slugify('#title');
-
         @if ($isModelTranslatable)
             $('.side-body').multilingual({"editing": true});
         @endif
