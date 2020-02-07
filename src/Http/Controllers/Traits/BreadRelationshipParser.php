@@ -4,6 +4,7 @@ namespace TCG\Voyager\Http\Controllers\Traits;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Str;
 use TCG\Voyager\Models\DataType;
 
 trait BreadRelationshipParser
@@ -48,7 +49,7 @@ trait BreadRelationshipParser
                     $method = $relation->method;
                     $this->relation_field[$method] = $item->field;
                 } else {
-                    $method = camel_case($item->field);
+                    $method = Str::camel($item->field);
                 }
 
                 $relationships[$method] = function ($query) use ($relation) {
@@ -111,7 +112,7 @@ trait BreadRelationshipParser
                 if (isset($this->relation_field[$field])) {
                     $field = $this->relation_field[$field];
                 } else {
-                    $field = snake_case($field);
+                    $field = Str::snake($field);
                 }
 
                 $bread_data = $dataType->browseRows->where('field', $field)->first();

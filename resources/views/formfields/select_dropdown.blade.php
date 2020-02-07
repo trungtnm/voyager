@@ -1,11 +1,13 @@
 @if(isset($options->relationship))
-
+    @php
+        $fieldInCamelCase = \Illuminate\Support\Str::camel($row->field);
+    @endphp
     {{-- If this is a relationship and the method does not exist, show a warning message --}}
-    @if( !method_exists( $dataType->model_name, camel_case($row->field) ) )
-        <p class="label label-warning"><i class="voyager-warning"></i> {{ __('voyager::form.field_select_dd_relationship', ['method' => camel_case($row->field).'()', 'class' => $dataType->model_name]) }}</p>
+    @if( !method_exists( $dataType->model_name, $fieldInCamelCase ) )
+        <p class="label label-warning"><i class="voyager-warning"></i> {{ __('voyager::form.field_select_dd_relationship', ['method' => $fieldInCamelCase.'()', 'class' => $dataType->model_name]) }}</p>
     @endif
 
-    @if( method_exists( $dataType->model_name, camel_case($row->field) ) )
+    @if( method_exists( $dataType->model_name, $fieldInCamelCase ) )
         @if(isset($dataTypeContent->{$row->field}) && !is_null(old($row->field, $dataTypeContent->{$row->field})))
             <?php $selected_value = old($row->field, $dataTypeContent->{$row->field}); ?>
         @else
@@ -24,11 +26,11 @@
             @endif
             {{-- Populate all options from relationship --}}
             <?php
-            $relationshipListMethod = camel_case($row->field) . 'List';
+            $relationshipListMethod = $fieldInCamelCase . 'List';
             if (method_exists($dataTypeContent, $relationshipListMethod)) {
                 $relationshipOptions = $dataTypeContent->$relationshipListMethod();
             } else {
-                $relationshipClass = $dataTypeContent->{camel_case($row->field)}()->getRelated();
+                $relationshipClass = $dataTypeContent->{$fieldInCamelCase}()->getRelated();
                 if (isset($options->relationship->where)) {
                     $relationshipOptions = $relationshipClass::where(
                         $options->relationship->where[0],
