@@ -233,7 +233,7 @@ class DataType extends Model
 
     public function getOrderColumnAttribute()
     {
-        return $this->details['order_column'];
+        return $this->details['order_column'] ?? null;
     }
 
     public function setOrderColumnAttribute($value)

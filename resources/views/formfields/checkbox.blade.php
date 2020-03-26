@@ -3,7 +3,7 @@
 @if(isset($dataTypeContent->{$row->field}) || old($row->field))
     <?php $checked = old($row->field, $dataTypeContent->{$row->field}); ?>
 @else
-    <?php $checked = isset($options->checked) && $options->checked ? true : false; ?>
+    <?php $checked = isset($options->checked) ? boolval($options->checked) : true; ?>
 @endif
 
 @if(isset($options->on) && isset($options->off))
