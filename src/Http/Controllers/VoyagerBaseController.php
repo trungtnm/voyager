@@ -590,7 +590,7 @@ class VoyagerBaseController extends Controller
         $item->{$field} = $request->input('value');
         $item->save();
 
-        return response()->json(['success' => true, 'value' => $item->{$field}]);
+        return response()->json(['success' => true, 'newValue' => $item->{$field}]);
     }
 
     /**
