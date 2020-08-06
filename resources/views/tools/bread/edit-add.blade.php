@@ -130,13 +130,18 @@
                                 </div>
                                 <div class="col-md-3 form-group">
                                     <label for="generate_permissions">{{ __('voyager::bread.generate_permissions') }}</label><br>
-                                    <?php $checked = (isset($dataType->generate_permissions) && $dataType->generate_permissions == 1) ? true : (isset($generate_permissions) && $generate_permissions) ? true : false; ?>
+                                    <?php
+                                    $checked = isset($dataType->generate_permissions) && $dataType->generate_permissions == 1;
+                                    $checked = !$checked && (isset($generate_permissions) && $generate_permissions);
+                                    ?>
                                     <input type="checkbox" name="generate_permissions" class="toggleswitch" data-on="{{ __('voyager::generic.yes') }}" data-off="{{ __('voyager::generic.no') }}"
                                            @if($checked) checked @endif>
                                 </div>
                                 <div class="col-md-3 form-group">
                                     <label for="server_side">{{ __('voyager::bread.server_pagination') }}</label><br>
-                                    <?php $checked = (isset($dataType->server_side) && $dataType->server_side == 1) ? true : (isset($server_side) && $server_side) ? true : false; ?>
+                                    <?php
+                                    $checked = isset($dataType->server_side) && $dataType->server_side == 1;
+                                    $checked = !$checked && (isset($server_side) && $server_side); ?>
                                     <input type="checkbox" name="server_side" class="toggleswitch" data-on="{{ __('voyager::generic.yes') }}" data-off="{{ __('voyager::generic.no') }}"
                                            @if($checked) checked @endif>
                                 </div>
